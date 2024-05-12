@@ -4,9 +4,7 @@
 
 void UserManager::ProcessSave()
 {
-	lock_guard<mutex> guard(_mutex);
-
 	Account* account = AccountManager::Instance()->GetAccount(100);
 
-
+	lock_guard<mutex> guard(_mutex);
 }
