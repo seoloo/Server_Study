@@ -1,33 +1,46 @@
 ﻿#include "pch.h"
 #include "CorePch.h"
-
 #include <thread>
+#include <atomic>
 
-void HelloThread()
+// atomic : All or Nothing
+// -> 한번에 모두 이루어지거나 한번에 모두 이루어지지 않거나
+
+// DB
+// 예시) 집행검 교환
+// A라는 유저 인벤에서 집행검 뺴고
+// B라는 유저 인벤에 집행검 추가
+
+atomic<int32> sum = 0;
+
+void Add()
 {
-	cout << "Hello Thread" << endl;
+	for (int32 i = 0; i < 100'0000; i++)
+	{
+		sum.fetch_add(1);
+	}
 }
 
-void HelloThread_2(int32 num)
+void Sub()
 {
-	cout << num << endl;
+	for (int32 i = 0; i < 100'0000; i++)
+	{
+		sum.fetch_sub(1);
+	}
 }
 
 int main()
 {
-	vector<thread> v;
+	Add();
+	Sub();
 
-	for (int32 i = 0; i < 10; i++)
-	{
-		// HelloThread_2 함수에 10 인자를 넣겠다.
-		v.push_back(thread(HelloThread_2, i)); 
-	}
+	cout << sum << endl;
 
-	for (int32 i = 0; i < 10; i++)
-	{
-		if (v[i].joinable())
-			v[i].join();
-	}
+	thread t1(Add);
+	thread t2(Sub);
 
-	cout << "Hello Main" << endl;
+	t1.join();
+	t2.join();
+
+	cout << sum << endl;
 }
