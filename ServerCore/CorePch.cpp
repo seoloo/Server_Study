@@ -4,4 +4,5 @@
 void HelloWorld()
 {
 	cout << "Hello Server!" << endl;
+	cout << "Server Start!" << endl;
 }
