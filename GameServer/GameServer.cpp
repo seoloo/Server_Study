@@ -14,31 +14,23 @@ public:
 		bool expected = false;
 		bool desired = true;
 
-		// CAS 의사 코드
-		/*if (_locked == expected)
-		{
-			expected = _locked;
-			_locked = desired;
-			return true;
-		}
-		else
-		{
-			expected = _locked;
-			return false;
-		}*/
-
-		// _locked.compare_exchange_strong(expected, desired)가
-		// 성공하면 while문을 빠져나올것이고 얻고자했던 값인
-		// desired를 _locked에 넣었다는 의미.
 		while (_locked.compare_exchange_strong(expected, desired) == false)
 		{
 			expected = false;
+
+			// sleep_for : 언제까지 자라, 그 시간동안 재스케쥴링이 되지않고 
+			// 대기하다가 시간이되면 다시 스케쥴링 대상이 되어 실행된다.
+			//  this_thread::sleep_for(chrono::microseconds(100));
+			this_thread::sleep_for(0ms);
+
+			// yield : 언제든지 스케줄링 될 수 있지만 
+			// 양보를 해서 커널 모드로 가서 스케쥴링을 넘기는 것
+			//  this_thread::yield();
 		}
 	}
 
 	void unlock()
 	{
-		//_locked = false;
 		_locked.store(false);
 	}
 
